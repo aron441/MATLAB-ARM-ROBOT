@@ -1,0 +1,51 @@
+
+if max([dist5_m(tk), dist6_m(tk), dist7_m(tk)]) >= 0.01
+        qd_(tk,:) = task2(:, tk)';
+    else
+        qd_(tk, :) = task1' + task2(:, tk)';
+    end
+   
+    v8(:, tk) = Jac1 * qd_(tk, :)';
+    
+    qd(tk+1,1) = qd(tk,1) + dt*qd_(tk,1);
+    qd(tk+1,2) = qd(tk,2) + dt*qd_(tk,2);
+    qd(tk+1,3) = qd(tk,3) + dt*qd_(tk,3);
+    qd(tk+1,4) = qd(tk,4) + dt*qd_(tk,4);
+    qd(tk+1,5) = qd(tk,5) + dt*qd_(tk,5);
+    qd(tk+1,6) = qd(tk,6) + dt*qd_(tk,6);
+    qd(tk+1,7) = qd(tk,7) + dt*qd_(tk,7);
+    qd(tk+1,8) = qd(tk,8) + dt*qd_(tk,8);
+    
+
+    if (mod(tk, dtk) == 0 || tk == 1)
+        cla %clear plot
+        plot(xd, yd, 'm:');
+        
+        plot(0, 0, 'o');
+        
+  		plot([0, xd1(tk)], [0, yd1(tk)],'b');
+	  	plot(xd1(tk), yd1(tk), 'ro');
+        
+  		plot([xd1(tk), xd2(tk)], [yd1(tk), yd2(tk)],'b');
+	  	plot(xd2(tk), yd2(tk), 'ro');
+        
+  		plot([xd2(tk), xd3(tk)], [yd2(tk), yd3(tk)],'b');
+	  	plot(xd3(tk), yd3(tk), 'ro');
+        
+        plot([xd3(tk), xd4(tk)], [yd3(tk), yd4(tk)],'b');
+	  	plot(xd4(tk), yd4(tk), 'ro');
+        
+        plot([xd4(tk), xd5(tk)], [yd4(tk), yd5(tk)],'b');
+	  	plot(xd5(tk), yd5(tk), 'ro');
+        
+        plot([xd5(tk), xd6(tk)], [yd5(tk), yd6(tk)],'b');
+	  	plot(xd6(tk), yd6(tk), 'ro');
+        
+        plot([xd6(tk), xd7(tk)], [yd6(tk), yd7(tk)],'b');
+	  	plot(xd7(tk), yd7(tk), 'ro');
+        
+        plot([xd7(tk), xd8(tk)], [yd7(tk), yd8(tk)],'b');
+	  	plot(xd8(tk), yd8(tk), 'ro');
+        
+     	plot(xd8(tk), yd8(tk), 'g+');
+        

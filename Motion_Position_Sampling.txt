@@ -1,0 +1,38 @@
+
+%Sampling period
+%duration of motion (in secs)
+%Initial position of end-effector
+%final position
+% desired trajectory (1st subtask): position (xd,yd); velocity (xd_,yd_)
+
+clear;
+close all;
+
+dt = 0.001; %1 msec
+
+Tf = 1.0; %1 sec
+t = 0:dt:Tf;
+
+pd8_0 = [5; 1; 0];
+
+xde_0 = pd8_0(1);
+yde_0 = pd8_0(2);
+
+
+d_AB = 1.5;
+pd8_f = pd8_0 + [d_AB; 0; 0];
+
+xde_f = pd8_f(1);
+yde_f = pd8_f(2);
+
+Nmax = Tf/dt + 1;
+k = linspace(0, Tf, Nmax);
+
+a1 = 6*(xde_f - xde_0)/Tf^2;
+a2 = -a1/Tf;
+
+xd = (-a1*k.^3)/(3*Tf) + (a1*k.^2)/2 + xde_0;
+yd = ones(1,length(k))*1;
+
+xd_ = a1*k + a2*k.^2;
+yd_ = zeros(1,length(k));

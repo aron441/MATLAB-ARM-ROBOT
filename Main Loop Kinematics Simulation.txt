@@ -1,0 +1,117 @@
+
+tt=0; tk=1;
+qd(tk,1)=0; qd(tk,2)=0; qd(tk,3)=0; qd(tk,4)=0; qd(tk,5)=0; qd(tk,6)=0; qd(tk,7)=0; qd(tk,8)=0;
+while (tt <= Tf)
+    %Calculate Jacobian for current q
+    c1 = cos(qd(tk,1));
+    c12 = cos(qd(tk,1) + qd(tk,2));
+    c123 = cos(qd(tk,1) + qd(tk,2) + qd(tk,3));
+    c1234 = cos(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4));
+    c12345 = cos(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4) + qd(tk,5));
+    c123456 = cos(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4) + qd(tk,5) + qd(tk,6));
+    c1234567 = cos(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4) + qd(tk,5) + qd(tk,6) + qd(tk,7));
+    c12345678 = cos(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4) + qd(tk,5) + qd(tk,6) + qd(tk,7) + qd(tk,8));
+    s1 = sin(qd(tk,1));
+    s12 = sin(qd(tk,1) + qd(tk,2));
+    s123 = sin(qd(tk,1) + qd(tk,2) + qd(tk,3));
+    s1234 = sin(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4));
+    s12345 = sin(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4) + qd(tk,5));
+    s123456 = sin(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4) + qd(tk,5) + qd(tk,6));
+    s1234567 = sin(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4) + qd(tk,5) + qd(tk,6) + qd(tk,7));
+    s12345678 = sin(qd(tk,1) + qd(tk,2) + qd(tk,3) + qd(tk,4) + qd(tk,5) + qd(tk,6) + qd(tk,7) + qd(tk,8));
+
+    Jac1(1,1) = -c1 - s12 - c123 - s1234 - s12345 - s123456 + c1234567  - s12345678;
+    Jac1(1,2) = Jac1(1,1) + c1;
+    Jac1(1,3) = Jac1(1,2) + s12;
+    Jac1(1,4) = Jac1(1,3) + c123;
+    Jac1(1,5) = Jac1(1,4) + s1234;
+    Jac1(1,6) = Jac1(1,5) + s12345;
+    Jac1(1,7) = c1234567 - s12345678;
+    Jac1(1,8) = -s12345678;
+    
+    Jac1(2,1) = -s1 + c12 - s123 + c1234 + c12345 + c123456 + s1234567 + c12345678;
+    Jac1(2,2) = Jac1(2,1) + s1;
+    Jac1(2,3) = Jac1(2,2) - c12;
+    Jac1(2,4) = Jac1(2,3) + s123;
+    Jac1(2,5) = Jac1(2,4) - c1234;
+    Jac1(2,6) = c12345678 + c123456 + s1234567;
+    Jac1(2,7) = c12345678 + s1234567;
+    Jac1(2,8) = c12345678;
+    
+    %Pseudo-inverse of jacobian
+    Jac1_psinv = Jac1'/(Jac1*Jac1');
+    
+    %Subtask 1
+    task1 = Jac1_psinv*[xd_(tk); yd_(tk)];
+    
+    %forward kinematics
+    xd1(tk) = -s1;
+    yd1(tk) = c1;
+    
+    xd2(tk) = xd1(tk) + c12;
+    yd2(tk) = yd1(tk) + s12;
+    
+    xd3(tk) = xd2(tk) - s123;
+    yd3(tk) = yd2(tk) + c123;
+    
+    xd4(tk) = xd3(tk) + c1234;
+    yd4(tk) = yd3(tk) + s1234;
+    
+    xd5(tk) = xd4(tk) + c12345;
+    yd5(tk) = yd4(tk) + s12345;
+    
+    xd6(tk) = xd5(tk) + c123456;
+    yd6(tk) = yd5(tk) + s123456;
+    
+    xd7(tk) = xd6(tk) + s1234567;
+    yd7(tk) = yd6(tk) - c1234567;
+    
+    xd8(tk) = xd7(tk) + c12345678;
+    yd8(tk) = yd7(tk) + s12345678;
+    
+    %Subtask 2
+    %minimize distance of joints 6 and 7 from middle line between obstacles
+    
+    %joint 7
+    dist7_m(tk) = (yd7(tk) - yde_0)^2;
+    
+    xi7 = zeros(8,1);
+    xi7(1) = -2*(yd7(tk) - yde_0)*(-s1 + c12 - s123 + c1234 + c12345 + c123456 + s1234567);
+    xi7(2) = -2*(yd7(tk) - yde_0)*(c12 - s123 + c1234 + c12345 + c123456 + s1234567);
+    xi7(3) = -2*(yd7(tk) - yde_0)*(-s123 + c1234 + c12345 + c123456 + s1234567);
+    xi7(4) = -2*(yd7(tk) - yde_0)*(c1234 + c12345 + c123456 + s1234567);
+    xi7(5) = -2*(yd7(tk) - yde_0)*(c12345 + c123456 + s1234567);
+    xi7(6) = -2*(yd7(tk) - yde_0)*(c123456 + s1234567);
+    xi7(7) = -2*(yd7(tk) - yde_0)*(s1234567);
+    xi7(8) = 0;
+    
+    %joint 6
+    dist6_m(tk) = (yd6(tk) - yde_0)^2;
+    
+    xi6 = zeros(8,1);
+    xi6(1) = -2*(yd6(tk) - yde_0)*(-s1 + c12 - s123 + c1234 + c12345 + c123456);
+    xi6(2) = -2*(yd6(tk) - yde_0)*(c12 - s123 + c1234 + c12345 + c123456);
+    xi6(3) = -2*(yd6(tk) - yde_0)*(-s123 + c1234 + c12345 + c123456);
+    xi6(4) = -2*(yd6(tk) - yde_0)*(c1234 + c12345 + c123456);
+    xi6(5) = -2*(yd6(tk) - yde_0)*(c12345 + c123456);
+    xi6(6) = -2*(yd6(tk) - yde_0)*(c123456);
+    xi6(7) = 0;
+    xi6(8) = 0;
+    
+    %joint 5
+    dist5_m(tk) = (yd5(tk) - yde_0)^2;
+    
+    xi5 = zeros(8,1);
+    xi5(1) = -2*(yd5(tk) - yde_0)*(-s1 + c12 - s123 + c1234 + c12345);
+    xi5(2) = -2*(yd5(tk) - yde_0)*(c12 - s123 + c1234 + c12345);
+    xi5(3) = -2*(yd5(tk) - yde_0)*(-s123 + c1234 + c12345);
+    xi5(4) = -2*(yd5(tk) - yde_0)*(c1234 + c12345);
+    xi5(5) = -2*(yd5(tk) - yde_0)*(c12345);
+    xi5(6) = 0;
+    xi5(7) = 0;
+    xi5(8) = 0;
+    
+    k5 = 50;
+    k6 = 50;
+    k7 = 100;
+    task2(:,tk) = (eye(8) - Jac1_psinv*Jac1)*(k5*xi5 + k6*xi6 + k7*xi7);

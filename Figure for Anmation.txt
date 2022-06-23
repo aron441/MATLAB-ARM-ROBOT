@@ -1,0 +1,14 @@
+
+figure;
+%set(gcf, 'Position', get(0,'Screensize')); % Maximize figure.
+axis([-1, 7 -0.5 3])
+axis on
+axis equal
+hold on
+
+xlabel('x (m)');
+ylabel('y (m)');
+plot(xd, yd, 'm:');
+
+dtk = 10; %% interval between consecutive plots
+pauseTime = 0.1;
